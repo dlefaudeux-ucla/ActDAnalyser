@@ -1,0 +1,26 @@
+Package: ActDAnalyser
+Type: Package
+Title: Infer half-life from ActinomycinD data
+Version: 0.1.0
+Author: Diane Lefaudeux, Nick Miller, Zhang (Frank) Cheng
+Maintainer: Diane Lefaudeux <dlefaudeux@ucla.edu>
+URL: https://github.com/dlefaudeux-ucla/ActDAnalyser
+BugReports: https://github.com/dlefaudeux-ucla/ActDAnalyser/issues
+Description: This package help analysing ActinomycinD RNAseq to infer half-life.
+Depends: 
+    R (>= 3.6.3.0)
+Imports:
+    ggplot2,
+    stats,
+    ggpubr,
+    gridExtra,
+    edgeR
+Suggests: 
+    knitr,
+    rmarkdown
+biocViews:
+VignetteBuilder: knitr
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 7.1.0

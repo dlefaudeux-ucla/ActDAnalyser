@@ -1,0 +1,8 @@
+^packrat/
+^\.Rprofile$
+^.*\.Rproj$
+^\.Rproj\.user$
+^data-raw/
+^doc$
+^Meta$
+^README\.Rmd$
