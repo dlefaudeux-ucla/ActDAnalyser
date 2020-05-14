@@ -9,7 +9,8 @@ decay_with_replicates_1exp(
   time,
   replicates = rep(1, length(counts)),
   qc,
-  threshold
+  threshold,
+  conf_levels
 )
 }
 \arguments{
@@ -26,6 +27,10 @@ for a specific experiment.}
 
 \item{threshold}{numeric. log2 threshold for which a replicate with all counts
 below it will not be considered.}
+
+\item{conf_levels}{numeric vector. Value of the confindence intervals wanted.
+Values must be between 0 and 1. If it is a vector, it will calculate the confidence
+intervals for all the values given.}
 }
 \value{
 A vector containing fit results with the following information:

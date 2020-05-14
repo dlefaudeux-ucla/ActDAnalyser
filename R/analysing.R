@@ -17,6 +17,9 @@
 #' with each element correpsonding to one replicate.
 #' @param rep_order integers vector. Replicate number giving the order of the
 #' previous parameters
+#' @param conf_levels numeric vector. Value of the confindence intervals wanted.
+#' Values must be between 0 and 1. If it is a vector, it will calculate the confidence
+#' intervals for all the values given.
 #' @return A vector containing fit results with the following information:
 #' \tabular{ll}{
 #'   ReplicatesNumber \tab replicates number from \code{metadata$ExperimentNumber}
@@ -35,7 +38,7 @@
 #' }
 #' @keywords internal
 #'
-regression_function  <- function(counts, time, indices, start, end, skip, rep_order){
+regression_function  <- function(counts, time, indices, start, end, skip, rep_order, conf_levels){
   nrep <- length(counts)
   read_used <- as.vector(unlist(sapply(1:nrep, function(r){counts[[r]][indices[[r]][ indices[[r]] >= start[r] & indices[[r]] <= end[r] & !(indices[[r]] %in% skip[r])]]})))
   time_used <- as.vector(unlist(sapply(1:nrep, function(r){time[[r]][indices[[r]][ indices[[r]] >= start[r] & indices[[r]] <= end[r] & !(indices[[r]] %in% skip[r])]]})))
@@ -47,9 +50,11 @@ regression_function  <- function(counts, time, indices, start, end, skip, rep_or
     fit_all <- stats::lm(read_used ~ time_used)
   }
 
-  confint_95  <- stats::confint(fit_all, level = .95)
-  confint_75  <- stats::confint(fit_all, level = .75)
-  confint_50  <- stats::confint(fit_all, level = .5)
+  confint <- lapply(conf_levels, function(cl){
+    stats::confint(fit_all, level = cl)
+    }
+  )
+
   regression_summary <- summary(fit_all)
   coefs <- stats::coefficients(fit_all)
 
@@ -58,7 +63,7 @@ regression_function  <- function(counts, time, indices, start, end, skip, rep_or
            coefs["time_used"],
            regression_summary$adj.r.squared,
            fit_all$df.residual,
-           confint_95["time_used",], confint_75["time_used",], confint_50["time_used",])
+           unlist(lapply(confint, function(l){l["time_used",]})))
   return(res)
 }
 
@@ -77,11 +82,14 @@ regression_function  <- function(counts, time, indices, start, end, skip, rep_or
 #' \code{metadata$QC}.
 #' @param threshold numeric. log2 threshold for which a replicate with all counts
 #' below it will not be considered.
+#' @param conf_levels numeric vector. Value of the confindence intervals wanted.
+#' Values must be between 0 and 1. If it is a vector, it will calculate the confidence
+#' intervals for all the values given.
 #' @inherit regression_function return
 #' @inherit inferDecay details
 #' @keywords internal
 #'
-decay_with_replicates_1exp <- function(counts, time, replicates = rep(1,length(counts)), qc, threshold) {
+decay_with_replicates_1exp <- function(counts, time, replicates = rep(1,length(counts)), qc, threshold, conf_levels) {
   # replace counts of qc failed by NA
   counts[qc == 'QC failed' | is.infinite(counts)] <- NA
 
@@ -152,9 +160,9 @@ decay_with_replicates_1exp <- function(counts, time, replicates = rep(1,length(c
   }
 
 
-  all_regression <- as.data.frame(t(sapply(1:ncol(start), function(i){regression_function(counts = counts, time = time, indices = indices, start = start[,i], end = end[,i], skip = skip[,i], rep_order = rep_order)})),stringsAsFactors = F)
-  colnames(all_regression) <- c("ReplicateNumbers", "Start", "End", "Skip", "Intercept", "Slope", "Adj Rsquare", "DF", "CI_95_LB", "CI_95_UB", "CI_75_LB", "CI_75_UB", "CI_50_LB", "CI_50_UB")
-  all_regression[,c("Slope", "Adj Rsquare", "DF", "CI_95_LB", "CI_95_UB", "CI_75_LB", "CI_75_UB", "CI_50_LB", "CI_50_UB")] <- apply(all_regression[,c("Slope", "Adj Rsquare", "DF", "CI_95_LB", "CI_95_UB", "CI_75_LB", "CI_75_UB", "CI_50_LB", "CI_50_UB")],2,as.numeric)
+  all_regression <- as.data.frame(t(sapply(1:ncol(start), function(i){regression_function(counts = counts, time = time, indices = indices, start = start[,i], end = end[,i], skip = skip[,i], rep_order = rep_order, conf_levels = conf_levels)})),stringsAsFactors = F)
+  colnames(all_regression) <- c("ReplicateNumbers", "Start", "End", "Skip", "Intercept", "Slope", "Adj Rsquare", "DF", paste('CI', rep(conf_levels*100,each=2), rep(c('LB','UB'), length(conf_levels)), sep='_'))
+  all_regression[,c("Slope", "Adj Rsquare", "DF", paste('CI', rep(conf_levels*100,each=2), rep(c('LB','UB'), length(conf_levels)), sep='_'))] <- apply(all_regression[,c("Slope", "Adj Rsquare", "DF", paste('CI', rep(conf_levels*100,each=2), rep(c('LB','UB'), length(conf_levels)), sep='_'))],2,as.numeric)
 
   if( any(all_regression$Slope <= 0)){
     best <- as.vector(unlist(all_regression[all_regression$Slope <= 0,][which.max(all_regression[all_regression$Slope <= 0 ,"Adj Rsquare"]),]))
@@ -215,6 +223,9 @@ convertSlopeToHL <- function(result){
 #' names see \code{\link{checkMetadata}} function.
 #' @param threshold numeric. If an experiment as all normalised counts below
 #' this threshold no fit are going to be perfomed.
+#' @param conf_levels numeric vector. Value of the confindence intervals wanted.
+#' Values must be between 0 and 1. If it is a vector, it will calculate the confidence
+#' intervals for all the values given.
 #' @return A list which elements corresponds to the result of one experiment. \cr
 #' Each element is a data.frame with the following columns:
 #' \tabular{ll}{
@@ -245,7 +256,7 @@ convertSlopeToHL <- function(result){
 #' decay <- inferDecay(norm_counts[1:100,], metadata)
 #' @export
 # wrapper to infer decay for all experiments
-inferDecay <- function(norm_counts, metadata, threshold = 32){
+inferDecay <- function(norm_counts, metadata, threshold = 32, conf_levels = c(0.95,0.75,0.5)){
   if( threshold <= 0 ){stop("threshold parameter must be > 0")}
   res <- list()
   exp_order <- unique(metadata$ExperimentNumber)
@@ -258,9 +269,9 @@ inferDecay <- function(norm_counts, metadata, threshold = 32){
     replicates <- metadata$ExperimentReplicate[match(colnames(reads_exp), metadata$SampleName)]
     qc <- metadata$QC[match(colnames(reads_exp), metadata$SampleName)]
     # res[[r]] <- t(sapply(1:nrow(reads_exp),function(i){if(i %% 100 == 0){print(i)}; decay_with_replicates_1exp(reads = log2(reads_exp[i,]) , time = time_exp , replicates = replicates, qc = qc, threshold = log2(threshold))}))
-    res[[r]] <- as.data.frame(t(sapply(1:nrow(reads_exp),function(i){decay_with_replicates_1exp(counts = log2(reads_exp[i,]) , time = time_exp , replicates = replicates, qc = qc, threshold = log2(threshold))})))
-    colnames(res[[r]]) <- c("ReplicateNumbers", "Start", "End", "Skip", "Intercept", "Slope", "Adj Rsquare", "DF", "CI_95_LB", "CI_95_UB", "CI_75_LB", "CI_75_UB", "CI_50_LB", "CI_50_UB")
-    res[[r]][,c("Slope", "Adj Rsquare", "DF", "CI_95_LB", "CI_95_UB", "CI_75_LB", "CI_75_UB", "CI_50_LB", "CI_50_UB")] <- apply(res[[r]][,c("Slope", "Adj Rsquare", "DF", "CI_95_LB", "CI_95_UB", "CI_75_LB", "CI_75_UB", "CI_50_LB", "CI_50_UB")],2,as.numeric)
+    res[[r]] <- as.data.frame(t(sapply(1:nrow(reads_exp),function(i){decay_with_replicates_1exp(counts = log2(reads_exp[i,]) , time = time_exp , replicates = replicates, qc = qc, threshold = log2(threshold), conf_levels = conf_levels)})))
+    colnames(res[[r]]) <- c("ReplicateNumbers", "Start", "End", "Skip", "Intercept", "Slope", "Adj Rsquare", "DF", paste('CI', rep(conf_levels*100,each=2), rep(c('LB','UB'), length(conf_levels)), sep='_'))
+    res[[r]][,c("Slope", "Adj Rsquare", "DF", paste('CI', rep(conf_levels*100,each=2), rep(c('LB','UB'), length(conf_levels)), sep='_'))] <- apply(res[[r]][,c("Slope", "Adj Rsquare", "DF", paste('CI', rep(conf_levels*100,each=2), rep(c('LB','UB'), length(conf_levels)), sep='_'))],2,as.numeric)
     row.names(res[[r]]) <- row.names(reads_exp)
   }
   names(res) <- exp_name

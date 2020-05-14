@@ -4,7 +4,16 @@
 \alias{regression_function}
 \title{Get fit result for a specific regression}
 \usage{
-regression_function(counts, time, indices, start, end, skip, rep_order)
+regression_function(
+  counts,
+  time,
+  indices,
+  start,
+  end,
+  skip,
+  rep_order,
+  conf_levels
+)
 }
 \arguments{
 \item{counts}{list of numeric vectors. List of log2 normalised counts for a
@@ -28,6 +37,10 @@ with each element correpsonding to one replicate.}
 
 \item{rep_order}{integers vector. Replicate number giving the order of the
 previous parameters}
+
+\item{conf_levels}{numeric vector. Value of the confindence intervals wanted.
+Values must be between 0 and 1. If it is a vector, it will calculate the confidence
+intervals for all the values given.}
 }
 \value{
 A vector containing fit results with the following information:

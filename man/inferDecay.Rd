@@ -4,7 +4,12 @@
 \alias{inferDecay}
 \title{Infer slope from normalised data}
 \usage{
-inferDecay(norm_counts, metadata, threshold = 32)
+inferDecay(
+  norm_counts,
+  metadata,
+  threshold = 32,
+  conf_levels = c(0.95, 0.75, 0.5)
+)
 }
 \arguments{
 \item{norm_counts}{numeric matrix or data.frame. Normalised data
@@ -15,6 +20,10 @@ names see \code{\link{checkMetadata}} function.}
 
 \item{threshold}{numeric. If an experiment as all normalised counts below
 this threshold no fit are going to be perfomed.}
+
+\item{conf_levels}{numeric vector. Value of the confindence intervals wanted.
+Values must be between 0 and 1. If it is a vector, it will calculate the confidence
+intervals for all the values given.}
 }
 \value{
 A list which elements corresponds to the result of one experiment. \cr
