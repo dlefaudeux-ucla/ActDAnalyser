@@ -264,10 +264,16 @@ inferDecay <- function(norm_counts, metadata, threshold = 32, conf_levels = c(0.
   nexp <- length(exp_order)
   for (r in 1:nexp){
     # print(paste('Exp',r))
-    reads_exp <- norm_counts[, colnames(norm_counts) %in% metadata$SampleName[metadata$ExperimentNumber == exp_order[r]]]
+    if(is.null(nrow(norm_counts))){
+      reads_exp <- t(as.matrix(norm_counts[names(norm_counts) %in% metadata$SampleName[metadata$ExperimentNumber == exp_order[r]]]))
+    }else{
+      reads_exp <- norm_counts[, colnames(norm_counts) %in% metadata$SampleName[metadata$ExperimentNumber == exp_order[r]]]
+    }
+
     time_exp <- metadata$ActDTime[match(colnames(reads_exp), metadata$SampleName)]
     replicates <- metadata$ExperimentReplicate[match(colnames(reads_exp), metadata$SampleName)]
     qc <- metadata$QC[match(colnames(reads_exp), metadata$SampleName)]
+
     # res[[r]] <- t(sapply(1:nrow(reads_exp),function(i){if(i %% 100 == 0){print(i)}; decay_with_replicates_1exp(reads = log2(reads_exp[i,]) , time = time_exp , replicates = replicates, qc = qc, threshold = log2(threshold))}))
     res[[r]] <- as.data.frame(t(sapply(1:nrow(reads_exp),function(i){decay_with_replicates_1exp(counts = log2(reads_exp[i,]) , time = time_exp , replicates = replicates, qc = qc, threshold = log2(threshold), conf_levels = conf_levels)})))
     colnames(res[[r]]) <- c("ReplicateNumbers", "Start", "End", "Skip", "Intercept", "Slope", "Adj Rsquare", "DF", paste('CI', rep(conf_levels*100,each=2), rep(c('LB','UB'), length(conf_levels)), sep='_'))
