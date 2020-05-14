@@ -202,9 +202,9 @@ decay_with_replicates_1exp <- function(counts, time, replicates = rep(1,length(c
 convertSlopeToHL <- function(result){
   res_conv <- list()
   for (r in 1:length(result)){
-    res_conv[[r]] <- result[[r]][,c(6,9:14,7)]
-    res_conv[[r]][,1:7] <- -1/(result[[r]][,c(6,9:14)])
-    res_conv[[r]][,1:7][res_conv[[r]][,1:7] < 0] <- Inf
+    res_conv[[r]] <- result[[r]][,c("Slope", grep('CI', colnames(result[[r]]), value = T),"Adj Rsquare")]
+    res_conv[[r]][,1:(ncol(res_conv[[r]])-1)] <- -1/(res_conv[[r]][,1:(ncol(res_conv[[r]])-1)])
+    res_conv[[r]][,1:(ncol(res_conv[[r]])-1)][res_conv[[r]][,1:(ncol(res_conv[[r]])-1)] < 0] <- Inf
     colnames(res_conv[[r]])[1] <- "HL"
   }
   names(res_conv) <- names(result)
