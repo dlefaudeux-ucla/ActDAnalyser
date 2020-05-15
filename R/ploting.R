@@ -339,7 +339,7 @@ plotPCA <- function(before, after, metadata, dim1 = 1, dim2 = 2, control = NULL)
 plotDistribution <- function(HL, metadata, control = NULL){
   dat_ggplot <- data.frame()
   for(r in 1: length(HL)){
-    dat_ggplot <- rbind(dat_ggplot, data.frame(HL = HL[[r]]$HL, metadata[which(metadata$ExperimentName == names(HL)[r])[1],]))
+    dat_ggplot <- rbind(dat_ggplot, data.frame(HL = HL[[r]]$HL, metadata[which(metadata$ExperimentName == names(HL)[r])[1],], row.names = NULL))
   }
 
   p <- ggplot2::ggplot(dat_ggplot, ggplot2::aes(x=HL, col=ExperimentName))
