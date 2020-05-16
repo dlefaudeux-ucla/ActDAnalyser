@@ -61,4 +61,5 @@ adjusted R^2 as result.
 \examples{
 attach(MEF_dataset)
 decay <- inferDecay(norm_counts[1:100,], metadata)
+detach(MEF_dataset)
 }

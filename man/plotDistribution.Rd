@@ -24,4 +24,5 @@ This function plots the overall distribution of half-lives infered.
 \examples{
 attach(MEF_dataset)
 plotDistribution(HL = halflife, metadata = metadata)
+detach(MEF_dataset)
 }

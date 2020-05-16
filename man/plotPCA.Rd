@@ -35,4 +35,5 @@ SampleName of the metadata
 \examples{
 attach(MEF_dataset)
 plotPCA(before = counts, after = norm_counts, metadata = metadata)
+detach(MEF_dataset)
 }

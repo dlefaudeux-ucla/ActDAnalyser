@@ -254,6 +254,7 @@ convertSlopeToHL <- function(result){
 #' @examples
 #' attach(MEF_dataset)
 #' decay <- inferDecay(norm_counts[1:100,], metadata)
+#' detach(MEF_dataset)
 #' @export
 # wrapper to infer decay for all experiments
 inferDecay <- function(norm_counts, metadata, threshold = 32, conf_levels = c(0.95,0.75,0.5)){

@@ -33,4 +33,5 @@ plotSpikeIns(before = spikeins, after = norm_spikeins, metadata = metadata)
 # Add some control over the ggplot2 output
 plotSpikeIns(before = spikeins, after = norm_spikeins, metadata = metadata,
              control = list(labs=list(title= "Spike-ins counts before vs after normalisation")))
+detach(MEF_dataset)
 }

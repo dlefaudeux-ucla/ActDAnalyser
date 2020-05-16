@@ -28,6 +28,7 @@
 #' @examples
 #' attach(MEF_dataset)
 #' checkMetadata(metadata, full_counts, type='all')
+#' detach(MEF_dataset)
 #' @export
 #'
 checkMetadata <- function(metadata, counts, type = 'required'){
@@ -83,6 +84,7 @@ checkMetadata <- function(metadata, counts, type = 'required'){
 #' @examples
 #' attach(MEF_dataset)
 #' filtered <- applyCountThreshold(full_counts, metadata)
+#' detach(MEF_dataset)
 #' @export
 #'
 applyCountThreshold <- function(data, metadata, threshold = 32){
@@ -107,6 +109,7 @@ applyCountThreshold <- function(data, metadata, threshold = 32){
 #' tmp <- extractSpikeIn(filtered, spikein = "ERCC")
 #' spikeins <- tmp[[1]]
 #' counts <- tmp[[2]]
+#' detach(MEF_dataset)
 #' @export
 #'
 extractSpikeIn <- function(data, spikein = "ERCC"){
@@ -145,6 +148,7 @@ extractSpikeIn <- function(data, spikein = "ERCC"){
 #' tmp <- SpikeInsNormalisation(spikeins, counts, gene_infos, metadata)
 #' norm_spikeins <- tmp[[1]]
 #' norm_counts <- tmp[[2]]
+#' detach(MEF_dataset)
 #' @export
 #'
 SpikeInsNormalisation <- function(spikein_counts, genes_counts, gene_infos, metadata, method="RLE", p = 0.75){

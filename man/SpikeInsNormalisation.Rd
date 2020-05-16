@@ -45,4 +45,5 @@ attach(MEF_dataset)
 tmp <- SpikeInsNormalisation(spikeins, counts, gene_infos, metadata)
 norm_spikeins <- tmp[[1]]
 norm_counts <- tmp[[2]]
+detach(MEF_dataset)
 }

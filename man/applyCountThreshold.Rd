@@ -23,4 +23,5 @@ Filter out genes for which no experiment pass the given threshold.
 \examples{
 attach(MEF_dataset)
 filtered <- applyCountThreshold(full_counts, metadata)
+detach(MEF_dataset)
 }

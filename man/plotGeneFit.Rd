@@ -64,5 +64,10 @@ This function plots the fit for specified genes and experiments.
 attach(MEF_dataset)
 plotGeneFit(gene = "ENSMUSG00000069020.7", norm_counts = norm_counts,
             metadata = metadata, decay_result = decay,
-            gene_infos = genes_infos)
+            gene_infos = gene_infos)
+# Add some control over the ggplot2 output
+plotGeneFit(gene = "Ccl5", norm_counts = norm_counts, gene_type = 'Symbol',
+            metadata = metadata, decay_result = decay,
+            gene_infos = gene_infos, control=list(facet_grid=list(cols=ggplot2::vars(Stimulus))))
+detach(MEF_dataset)
 }

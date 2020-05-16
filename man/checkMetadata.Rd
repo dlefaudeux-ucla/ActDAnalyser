@@ -39,4 +39,5 @@ matching column names of the counts, not having required columns ...
 \examples{
 attach(MEF_dataset)
 checkMetadata(metadata, full_counts, type='all')
+detach(MEF_dataset)
 }

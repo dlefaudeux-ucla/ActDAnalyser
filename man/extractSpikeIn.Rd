@@ -25,4 +25,5 @@ attach(MEF_dataset)
 tmp <- extractSpikeIn(filtered, spikein = "ERCC")
 spikeins <- tmp[[1]]
 counts <- tmp[[2]]
+detach(MEF_dataset)
 }

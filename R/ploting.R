@@ -34,6 +34,7 @@ evalLayer <- function(p, layer, args){
 #' # Add some control over the ggplot2 output
 #' plotSpikeIns(before = spikeins, after = norm_spikeins, metadata = metadata,
 #'              control = list(labs=list(title= "Spike-ins counts before vs after normalisation")))
+#' detach(MEF_dataset)
 #' @export
 plotSpikeIns <- function(before, after, metadata, control = NULL){
   dat_g <- rbind(data.frame(Counts = unlist(before),
@@ -136,6 +137,7 @@ plotSpikeIns <- function(before, after, metadata, control = NULL){
 #' #' # Add some control over the ggplot2 output
 #' plotLibrarySize(before = counts, after = norm_counts, metadata = metadata,
 #'                 control = list(labs=list(y="Effective Library size")))
+#' detach(MEF_dataset)
 #' @export
 plotLibrarySize <- function(before, after, metadata, control = NULL){
   dat_g <- rbind(data.frame(Library = colSums(before),
@@ -224,6 +226,7 @@ plotLibrarySize <- function(before, after, metadata, control = NULL){
 #' @examples
 #' attach(MEF_dataset)
 #' plotPCA(before = counts, after = norm_counts, metadata = metadata)
+#' detach(MEF_dataset)
 #' @export
 plotPCA <- function(before, after, metadata, dim1 = 1, dim2 = 2, control = NULL){
   if (!requireNamespace("gridExtra", quietly = TRUE)) {
@@ -334,6 +337,7 @@ plotPCA <- function(before, after, metadata, dim1 = 1, dim2 = 2, control = NULL)
 #' @examples
 #' attach(MEF_dataset)
 #' plotDistribution(HL = halflife, metadata = metadata)
+#' detach(MEF_dataset)
 #' @export
 # plot distribution
 plotDistribution <- function(HL, metadata, control = NULL){
@@ -407,7 +411,12 @@ plotDistribution <- function(HL, metadata, control = NULL){
 #' attach(MEF_dataset)
 #' plotGeneFit(gene = "ENSMUSG00000069020.7", norm_counts = norm_counts,
 #'             metadata = metadata, decay_result = decay,
-#'             gene_infos = genes_infos)
+#'             gene_infos = gene_infos)
+#' # Add some control over the ggplot2 output
+#' plotGeneFit(gene = "Ccl5", norm_counts = norm_counts, gene_type = 'Symbol',
+#'             metadata = metadata, decay_result = decay,
+#'             gene_infos = gene_infos, control=list(facet_grid=list(cols=ggplot2::vars(Stimulus))))
+#' detach(MEF_dataset)
 #' @export
 # plot specific gene and experiments
 plotGeneFit <- function(gene, norm_counts, metadata, decay_result, gene_infos,

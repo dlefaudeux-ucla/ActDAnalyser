@@ -34,4 +34,5 @@ plotLibrarySize(before = counts, after = norm_counts, metadata = metadata)
 #' # Add some control over the ggplot2 output
 plotLibrarySize(before = counts, after = norm_counts, metadata = metadata,
                 control = list(labs=list(y="Effective Library size")))
+detach(MEF_dataset)
 }

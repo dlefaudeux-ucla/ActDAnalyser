@@ -86,7 +86,7 @@ decay <- inferDecay(norm_counts = norm_counts, metadata = metadata, threshold = 
 halflife <- convertSlopeToHL(decay)
 
 # plot distributions
-plotDistribution(HL=halflife)
+plotDistribution(HL=halflife, metadata = metadata)
 
 # plot fit for specific gene and experiment(s)
 plotGeneFit(gene = "ENSMUSG00000069020.7", norm_counts = norm_counts, metadata = metadata,
@@ -95,7 +95,7 @@ plotGeneFit(gene = "ENSMUSG00000069020.7", norm_counts = norm_counts, metadata =
 plotGeneFit(gene = "Il16", norm_counts = norm_counts, metadata = metadata,
             decay_result = decay, gene_infos = gene_infos, gene_type='Symbol', showRegion=T, level=0.95, control=list(facet_grid=list(rows = formula('~Stimulus')), theme = list(aspect.ratio=1)))
 
-dataset <- list(full_counts = full_counts, gene_infos = gene_infos,
+MEF_dataset <- list(full_counts = full_counts, gene_infos = gene_infos,
                     metadata = metadata, filtered = filtered,
                     spikeins = spikeins, counts = counts,
                     norm_spikeins = norm_spikeins, norm_counts = norm_counts,
