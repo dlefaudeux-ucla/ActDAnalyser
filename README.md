@@ -12,6 +12,11 @@
 This package provides an easy way to analyse ActinomycinD RNA sequencing
 data and to infer RNA half-life from it.
 
+If you only want to access measured half-life you can use the
+[ActDBrowser](https://www.signalingsystems.ucla.edu/ActDBrowser), that
+will allow to search available datasets for measured half-life for
+specific genes or overall distributions.
+
 ## Installation
 
 You can install this package by using devtools package:
@@ -218,7 +223,7 @@ Now we can compare the raw data and the normalised data.
 plotSpikeIns(before = spikeins, after = norm_spikeins, metadata = metadata)
 ```
 
-<img src="man/figures/README-unnamed-chunk-14-1.png" width="100%" />
+<img src="man/figures/README-plot_spikeins-1.png" width="100%" />
 
 As we can see after normalisation the spike in counts are brought to
 similar levels.
@@ -228,7 +233,7 @@ similar levels.
 plotLibrarySize(before = counts, after = norm_counts, metadata = metadata)
 ```
 
-<img src="man/figures/README-unnamed-chunk-15-1.png" width="100%" />
+<img src="man/figures/README-plot_library_size-1.png" width="100%" />
 
 As we can see most experiment show a decreasing library size after
 normalising, which is what we would expect because there will be less
@@ -242,7 +247,7 @@ lead to accurate results) and the results might not be accurate
 plotPCA(before = counts, after = norm_counts, metadata = metadata)
 ```
 
-<img src="man/figures/README-unnamed-chunk-16-1.png" width="100%" />
+<img src="man/figures/README-plot_pca-1.png" width="100%" />
 
 Simirlaly we can see that some sample behave weird and that is why they
 have been set as ‘QC failed’
@@ -324,7 +329,7 @@ plotGeneFit(gene = "ENSMUSG00000033845.11", norm_counts = norm_counts, metadata 
 #> 104.2068884   0.9922852
 ```
 
-<img src="man/figures/README-unnamed-chunk-19-1.png" width="100%" />
+<img src="man/figures/README-plot_gene_ensembl_id-1.png" width="100%" />
 
 Given that the gene\_infos data.frame also has Symbol we can also use
 the gene name to plot, for that we need to specify to look in the Symbol
@@ -371,4 +376,27 @@ plotGeneFit(gene = "Cd28", norm_counts = norm_counts, metadata = metadata,
 #> 167.7786190   0.9940506
 ```
 
-<img src="man/figures/README-unnamed-chunk-20-1.png" width="100%" />
+<img src="man/figures/README-plot_gene_name-1.png" width="100%" />
+
+Additionally you can also plot the distribution of all the genes for a
+specific R² threshold.
+
+``` r
+plotDistribution(HL = halflife, metadata = metadata ,
+            control=list(theme = list(aspect.ratio=0.5)))
+#> Warning: Removed 554 rows containing non-finite values (stat_density).
+```
+
+<img src="man/figures/README-plot_distribution-1.png" width="100%" />
+
+You can also only plot the distribution of genes having a adjusted R²
+within a specified interval. Here set to show distribution for fits
+having and adjusted R² between 0.99 and 1.
+
+``` r
+plotDistribution(HL = halflife, metadata = metadata , r2_th = c(0.99,1),
+            control=list(theme = list(aspect.ratio=0.5)))
+#> Warning: Removed 554 rows containing non-finite values (stat_density).
+```
+
+<img src="man/figures/README-plot_distribution_subset-1.png" width="100%" />

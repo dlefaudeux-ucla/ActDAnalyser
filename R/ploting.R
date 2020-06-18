@@ -330,6 +330,8 @@ plotPCA <- function(before, after, metadata, dim1 = 1, dim2 = 2, control = NULL)
 #' function.
 #' @param metadata data.frame. Metadata of the data. Must have specific column
 #' names see \code{\link{checkMetadata}} function.
+#' @param r2_th vector of 2 elements. Interval of adjusted R² to select genes
+#' for ploting. Default to NULL: will not do any selection on adjusted R² values.
 #' @param control list. Further control ggplot2 output. This must be a named
 #' list with the names corresponding to ggplot2 function and the associated
 #' value is also a named list of the ggplot2 function argument name and its
@@ -340,11 +342,27 @@ plotPCA <- function(before, after, metadata, dim1 = 1, dim2 = 2, control = NULL)
 #' detach(MEF_dataset)
 #' @export
 # plot distribution
-plotDistribution <- function(HL, metadata, control = NULL){
+plotDistribution <- function(HL, metadata, r2_th = NULL, control = NULL){
+  if (!is.null(r2_th)){
+    if (!is.numeric(r2_th) | length(r2_th) != 2 ){
+      stop('r2_th should be a 2 elements numeric vector')
+    }else{
+      r2_th <- sort(r2_th)
+    }
+  }
+
   dat_ggplot <- data.frame()
-  for(r in 1: length(HL)){
-    if(nrow(HL[[r]]) > 0){
-      dat_ggplot <- rbind(dat_ggplot, data.frame(HL = HL[[r]]$HL, metadata[which(metadata$ExperimentName == names(HL)[r])[1],], row.names = NULL))
+  for(r in 1:length(HL)){
+    if (is.null(r2_th)){
+      if(nrow(HL[[r]]) > 0){
+        dat_ggplot <- rbind(dat_ggplot, data.frame(HL = HL[[r]]$HL, metadata[which(metadata$ExperimentName == names(HL)[r])[1],], row.names = NULL))
+      }
+    }else{
+      hl_tmp <- HL[[r]]
+      hl_tmp <- hl_tmp[hl_tmp[,"Adj Rsquare"] >= r2_th[1] &  hl_tmp[,"Adj Rsquare"] <= r2_th[2], ]
+      if(nrow(hl_tmp) > 0){
+        dat_ggplot <- rbind(dat_ggplot, data.frame(HL = hl_tmp$HL, metadata[which(metadata$ExperimentName == names(HL)[r])[1],], row.names = NULL))
+      }
     }
   }
 
@@ -558,7 +576,7 @@ plotGeneFit <- function(gene, norm_counts, metadata, decay_result, gene_infos,
   if('labs' %in% names(control)){
     args <- control$labs
     if(!('y' %in% names(args))){
-      args <- c(args, list(y='log2(normalized counts)'))
+      args <- c(args, list(y='log2(normalised counts)'))
     }
     if(!('x' %in% names(args))){
       args <- c(args, list(x='Time (min)'))
@@ -568,7 +586,7 @@ plotGeneFit <- function(gene, norm_counts, metadata, decay_result, gene_infos,
     }
     p <- evalLayer(p, 'labs', args)
   }else{
-    p <- p + ggplot2::labs(y='log2(normalized counts)', x='Time (min)', title = gene)
+    p <- p + ggplot2::labs(y='log2(normalised counts)', x='Time (min)', title = gene)
   }
 
   if('scale_color_discrete' %in% names(control)){

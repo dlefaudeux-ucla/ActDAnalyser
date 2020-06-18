@@ -23,6 +23,9 @@ knitr::opts_chunk$set(
 This package provides an easy way to analyse ActinomycinD RNA sequencing data
 and to infer RNA half-life from it.
 
+If you only want to access measured half-life you can use the [ActDBrowser](https://www.signalingsystems.ucla.edu/ActDBrowser), that 
+will allow to search available datasets for measured half-life for specific genes or overall distributions. 
+
 ## Installation
 
 You can install this package by using devtools package:    
@@ -117,14 +120,14 @@ norm_counts <-  tmp[[2]]
 ```
 
 Now we can compare the raw data and the normalised data.
-```{r, fig.width=10, fig.height=5}
+```{r plot_spikeins, fig.width=10, fig.height=5}
 # Plot spike-ins counts before and after normalisation
 plotSpikeIns(before = spikeins, after = norm_spikeins, metadata = metadata)
 ```
 
 As we can see after normalisation the spike in counts are brought to similar levels.
 
-```{r, fig.width=10, fig.height=5}
+```{r plot_library_size, fig.width=10, fig.height=5}
 # Plot library size before and after normalisation
 plotLibrarySize(before = counts, after = norm_counts, metadata = metadata)
 ```
@@ -136,7 +139,7 @@ Experiments that don't follow that pattern might be of lesser quality (i.e. the
 spike-ins addition to each library might be to variable to lead to accurate results) 
 and the results might not be accurate
 
-```{r, fig.width=10, fig.height=5}
+```{r plot_pca, fig.width=10, fig.height=5}
 # plot pca of counts before/after normalisation
 plotPCA(before = counts, after = norm_counts, metadata = metadata)
 ```
@@ -163,7 +166,7 @@ head(halflife[[1]])
 #### Visulasizing result
 You can plot fit for specific genes using
 
-```{r, fig.width=7, fig.height=5}
+```{r plot_gene_ensembl_id, fig.width=7, fig.height=5}
 plotGeneFit(gene = "ENSMUSG00000033845.11", norm_counts = norm_counts, metadata = metadata,
             decay_result = decay, gene_infos = gene_infos, gene_type='Geneid', 
             control=list(facet_grid=list(rows = formula('~Conditioning')), theme = list(aspect.ratio=1)))
@@ -171,9 +174,22 @@ plotGeneFit(gene = "ENSMUSG00000033845.11", norm_counts = norm_counts, metadata 
 
 Given that the gene_infos data.frame also has Symbol we can also use the gene name to plot,
 for that we need to specify to look in the Symbol column by setting `r gene_type = 'Symbol'`
-```{r, fig.width=7, fig.height=5}
+```{r plot_gene_name, fig.width=7, fig.height=5}
 plotGeneFit(gene = "Cd28", norm_counts = norm_counts, metadata = metadata,
             decay_result = decay, gene_infos = gene_infos, gene_type='Symbol', 
             control=list(facet_grid=list(rows = formula('~Conditioning')), theme = list(aspect.ratio=1)))
 ```
 
+Additionally you can also plot the distribution of all the genes for a specific R² threshold.
+
+```{r plot_distribution, fig.width=7, fig.height=5}
+plotDistribution(HL = halflife, metadata = metadata ,
+            control=list(theme = list(aspect.ratio=0.5)))
+```
+
+You can also only plot the distribution of genes having a adjusted R² within a specified interval. Here set to show distribution for fits having and adjusted R² between 0.99 and 1.
+
+```{r plot_distribution_subset, fig.width=7, fig.height=5}
+plotDistribution(HL = halflife, metadata = metadata , r2_th = c(0.99,1),
+            control=list(theme = list(aspect.ratio=0.5)))
+```
